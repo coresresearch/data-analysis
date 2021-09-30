@@ -17,18 +17,18 @@ porosity = 0.78
 carb_m = carb_v*carb_den*(1. - porosity)
 
 # Point to the data files
-path = 'C:/L/Melodie/Labdata/Toprocess' #change this to file directory
+path = 'C:/Users/Mels/Code/Labdata/Toprocess' #change this to file directory
 
 # Set equal to 1 to see a graph, 0 to hide it:
 flag_charge_discharge = 1
 flag_voltage_gap = 0
 
 # Number of cycles you are plotting: #change this to number of files
-n_cycles = 1
+n_cycles = 9
 first_cycle = 1
 
 # Plot file name preamble:  #change this to desired savename
-savename = 'test'
+savename = '20210710'
 
 #%%
 "===================== PLOTTING OPTIONS ============================="
@@ -58,7 +58,7 @@ def graph(file):
     Data[3] = Data[3].astype(float) # Current [A]
 
     Data['capacity'] = Data[1] * abs(Data[3])/carb_m*1000/3600 #convert to mAh/g
-    title = file.split("_chargedischarge_#") #change this so the number is isolated.
+    title = file.split("_cycle_") #change this so the number is isolated.
     # Read out the cycle number:
     title2 = title[1].split(".")
     n_cycle = int(title2[0]) # cycle number
@@ -116,7 +116,7 @@ discharge_capacities = np.zeros(n_cycles)
 charge_capacities = np.zeros(n_cycles)
 
 for file in os.listdir(path):
-    if file.find('chargedischarge') > -1: #change this so the file is reconized
+    if file.find('20210811') > -1: #change this so the file is reconized
         if file.find('EIS') < 0:
             print(file)
             Voltgap_1, Voltgap_2, p, n, cap_d, cap_c =graph(path + "/"+ file)
@@ -128,6 +128,7 @@ for file in os.listdir(path):
             V2.append(Voltgap_2)
             iform.append(i)
             i=i+1
+            
 
 plt.ylim([1.5, 5.])
 
@@ -136,6 +137,7 @@ legend_plots = []
 legend_strings = []
 for i in np.arange(n_cycles):
     print(plots)
+    print(first_cycle)
     legend_plots.append(plots[str(i+first_cycle)])
     legend_strings.append('Cycle '+str(i+first_cycle))
 
