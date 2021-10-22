@@ -26,6 +26,8 @@ def graph(file):
     plt.ylabel('Potential (V)', fontsize=14, fontname = 'Times New Roman')
     plt.xticks(fontsize=14, fontname = 'Times New Roman') 
     plt.yticks(fontsize=14, fontname = 'Times New Roman') 
+    plt.xlim(0,0.30)
+    plt.ylim(2.4,2.8)
     plt.legend()
 
 for file in os.listdir(path):
