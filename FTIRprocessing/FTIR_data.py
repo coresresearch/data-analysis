@@ -4,6 +4,8 @@ import numpy as np
 import io
 import matplotlib.pyplot as plt
 import os
+from scipy.signal import argrelextrema
+from scipy.signal import find_peaks
 #edit these to process your data.
 path = 'C:/Users/Mels/Downloads/drive-download-20210924T155724Z-001/ToProcess' #change this to file directory
 key = 'Absorbance'
@@ -33,14 +35,18 @@ def graph(file):
     plt.plot(Data['graph_x'] ,Data['graph_y'],  linewidth = 2., label =legend[i],  color = colors[i]) 
     Data = Data.fillna(0.0)
     # print(Data['graph_x'].apply(type))
-    #test = Data.set_index('graph_x').sub(740.0).abs().idxmin()
-    
+    found_peaks, _ = find_peaks(Data['graph_y'])
     intensity = []
     for peak in peaks:
-        lowerneighbour_ind = Data[Data['graph_x'] < peak]['graph_x'].idxmax()
-        higherneighbour_ind = Data[Data['graph_x'] > peak]['graph_x'].idxmin()
-        average = (Data['graph_y'][lowerneighbour_ind] + Data['graph_y'][higherneighbour_ind])/2
-        intensity.append(average)
+        Data['locator'] =(Data['graph_x'][found_peaks]-peak).abs()
+        Data = Data.fillna(5000)
+        peak_index = Data.iloc[(Data['locator']).argsort()[:1]]
+        peak_index_2 = peak_index.index.tolist()
+        value = Data['graph_y'][peak_index_2[0]]
+        # lowerneighbour_ind = Data[Data['graph_x'] < peak]['graph_x'].idxmax()
+        # higherneighbour_ind = Data[Data['graph_x'] > peak]['graph_x'].idxmin()
+        # average = (Data['graph_y'][lowerneighbour_ind] + Data['graph_y'][higherneighbour_ind])/2
+        intensity.append(value)
     intensity = np.array(intensity)
     return intensity
  
@@ -51,6 +57,7 @@ for file in os.listdir(path):
         intensity = graph(path + "/"+ file)
         exp_intensity = np.append(exp_intensity, np.array([intensity]), axis = 0); exp_intensity
         i = i+1
+print(exp_intensity)
 
 plt.legend()
 plt.xlabel('Cycle', fontsize=14, fontname = 'Times New Roman')
