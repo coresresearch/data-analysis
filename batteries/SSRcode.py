@@ -5,7 +5,7 @@ import os
 
 
 path = 'D:\projects\Data\ToProcess' #change this to file directory
-modelfile = 'Refdata1.csv'
+modelfile = 'output.csv'
 comparison = 'Refdata.xlsx'
 
 # CPCN04 = "50CP50CNT0.4"
@@ -16,8 +16,8 @@ comparison = 'Refdata.xlsx'
 # CP0.6
 #%%
 
-Capacity_test = [0.1,0.2, 0.3]
-Voltage_test = [0, 0, 0]
+# Capacity_test = [0.1,0.2, 0.3]
+# Voltage_test = [0, 0, 0]
 
 
 def interpolate(voltage1, voltage2, capacity1, capacity2, capacity3):
@@ -25,8 +25,8 @@ def interpolate(voltage1, voltage2, capacity1, capacity2, capacity3):
     return voltage3
 
 def locater(dataset, i, refcapacity):
-    lowerneighbour_ind = RefData[dataset][Data[dataset]['Capacity'] < CodeData['Capacity'][i]]['Capacity'].idxmax()
-    higherneighbour_ind = RefData[dataset][Data[dataset]['Capacity'] > CodeData['Capacity'][i]]['Capacity'].idxmin()
+    lowerneighbour_ind = RefData[dataset][RefData[dataset]['Capacity'] < CodeData['capacity'][i]]['Capacity'].idxmax()
+    higherneighbour_ind = RefData[dataset][RefData[dataset]['Capacity'] > CodeData['capacity'][i]]['Capacity'].idxmin()
     capacity1 = RefData[dataset]['Capacity'][lowerneighbour_ind]
     capacity2 = RefData[dataset]['Capacity'][higherneighbour_ind]
     capacity3 = refcapacity
@@ -34,14 +34,18 @@ def locater(dataset, i, refcapacity):
     voltage2 = RefData[dataset]['Voltage'][higherneighbour_ind]
     v3 = (interpolate(voltage1, voltage2, capacity1, capacity2, capacity3))
     print(i)
-    SSR = (CodeData['Capacity'][i] - v3)**2
+    SSR = (CodeData['capacity'][i] - v3)**2
     return SSR
-
 
 RefData = pd.read_excel(path + "/"+ comparison, sheet_name= None)
 CodeData = pd.read_csv(path + "/"+ modelfile)
 
-for x, y in enumerate(CodeData['Capacity']):
+cyclestart = CodeData[CodeData['cycle'] > 0]['cycle'].idxmin() + 1
+chargestart = CodeData[CodeData['cycle'] > 1]['cycle'].idxmin()
+
+SumSR =0
+
+for x, y in enumerate(CodeData['capacity'][cyclestart:chargestart]):
     SumSR += locater("50CP50CNT0.4", x, y)
     print(SumSR)
 
