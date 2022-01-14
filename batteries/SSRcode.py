@@ -4,21 +4,13 @@ import pandas as pd
 import os
 
 
+
+
 path = 'D:\projects\Data\ToProcess' #change this to file directory
+path2 = 'D:\projects\BatCan\outputs'
 modelfile = 'output.csv'
 comparison = 'Refdata.xlsx'
-
-# CPCN04 = "50CP50CNT0.4"
-# CP04 = "CP0.4"
-# 50CP50CNT0.5
-# CP0.5
-# 50CP50CNT0.6
-# CP0.6
 #%%
-
-# Capacity_test = [0.1,0.2, 0.3]
-# Voltage_test = [0, 0, 0]
-
 
 def interpolate(voltage1, voltage2, capacity1, capacity2, capacity3):
     voltage3 =  (voltage2 - voltage1)*(capacity3-capacity1)/(capacity2-capacity1) +voltage1
@@ -33,21 +25,35 @@ def locater(dataset, i, refcapacity):
     voltage1 = RefData[dataset]['Voltage'][lowerneighbour_ind]
     voltage2 = RefData[dataset]['Voltage'][higherneighbour_ind]
     v3 = (interpolate(voltage1, voltage2, capacity1, capacity2, capacity3))
-    print(i)
     SSR = (CodeData['capacity'][i] - v3)**2
     return SSR
 
+def SSRmain(folder_name, dataset):
+    SumSR = 0
+    CodeData = pd.read_csv(path2+"/" + folder_name + "/" + "output.csv")
+    cyclestart = CodeData[CodeData['cycle'] > 0]['cycle'].idxmin() + 1
+    chargestart = CodeData[CodeData['cycle'] > 1]['cycle'].idxmin()
+    for x, y in enumerate(CodeData['capacity'][cyclestart:chargestart]):
+        SumSR += locater(dataset, x, y)
+
 RefData = pd.read_excel(path + "/"+ comparison, sheet_name= None)
-CodeData = pd.read_csv(path + "/"+ modelfile)
 
-cyclestart = CodeData[CodeData['cycle'] > 0]['cycle'].idxmin() + 1
-chargestart = CodeData[CodeData['cycle'] > 1]['cycle'].idxmin()
+#%%
 
-SumSR =0
+ID_key = {"CPCN04": "50CP50CNT0.4", "CP04":"CP0.4", "CPCN05":"50CP50CNT0.5", "CP05": "CP0.5", "CPCN06":"50CP50CNT0.6", "CP06":"CP0.6"}
+SSRarray = []
 
-for x, y in enumerate(CodeData['capacity'][cyclestart:chargestart]):
-    SumSR += locater("50CP50CNT0.4", x, y)
-    print(SumSR)
+
+for folder_name in os.listdir(path2):
+    if "20220114" in folder_name:
+        string = folder_name
+        array = string.split("_")
+        dataset = ID_key[array[1]]
+        SSR_file = SSRmain(folder_name, dataset)
+        SSRarray.append(SSR_file)
+
+print(SSRarray)
+
 
 #result = [locater("50CP50CNT0.4", x, refcapcity) for x, refcapcity in enumerate(CodeData['Capacity'])]
 #print(result)
