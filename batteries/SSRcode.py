@@ -3,9 +3,6 @@
 import pandas as pd
 import os
 
-
-
-
 path = 'D:\projects\Data\ToProcess' #change this to file directory
 path2 = 'D:\projects\BatCan\outputs'
 modelfile = 'output.csv'
@@ -39,7 +36,6 @@ def SSRmain(folder_name, dataset):
 RefData = pd.read_excel(path + "/"+ comparison, sheet_name= None)
 
 #%%
-
 ID_key = {"CPCN04": "50CP50CNT0.4", "CP04":"CP0.4", "CPCN05":"50CP50CNT0.5", "CP05": "CP0.5", "CPCN06":"50CP50CNT0.6", "CP06":"CP0.6"}
 SSRarray = []
 
@@ -63,8 +59,6 @@ print(SSRarray)
 # higherneighbour_ind = Data2[Data2['Capacity'] > Temp]['Capacity'].idxmin()
 # v3 = interpolate(Data2['Capacity'][higherneighbour_ind], voltage2,Data2['Capacity'][lowerneighbour_ind], Data2['Capacity'][higherneighbour_ind], capacity3)
 # SSR += (Voltage_test[i] - v3)**2
-
-
 
 # %%
 # Official Playlist
