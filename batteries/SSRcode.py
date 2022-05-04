@@ -3,6 +3,7 @@
 import pandas as pd
 import os
 
+#https://doi.org/10.1016/j.electacta.2014.09.074 for refdata
 path = 'D:\projects\Data\ToProcess' #change this to file directory
 path2 = 'D:\projects\BatCan\outputs'
 modelfile = 'output.csv'
@@ -13,16 +14,16 @@ def interpolate(voltage1, voltage2, capacity1, capacity2, capacity3):
     voltage3 =  (voltage2 - voltage1)*(capacity3-capacity1)/(capacity2-capacity1) +voltage1
     return voltage3
 
-def locater(dataset, i, refcapacity):
-    lowerneighbour_ind = RefData[dataset][RefData[dataset]['Capacity'] < CodeData['capacity'][i]]['Capacity'].idxmax()
-    higherneighbour_ind = RefData[dataset][RefData[dataset]['Capacity'] > CodeData['capacity'][i]]['Capacity'].idxmin()
+def locater1(dataset, refcapacity, refvoltage):
+    lowerneighbour_ind = RefData[dataset][RefData[dataset]['Capacity'] < refcapacity]['Capacity'].idxmax()
+    higherneighbour_ind = lowerneighbour_ind + 1
     capacity1 = RefData[dataset]['Capacity'][lowerneighbour_ind]
     capacity2 = RefData[dataset]['Capacity'][higherneighbour_ind]
     capacity3 = refcapacity
     voltage1 = RefData[dataset]['Voltage'][lowerneighbour_ind]
     voltage2 = RefData[dataset]['Voltage'][higherneighbour_ind]
     v3 = (interpolate(voltage1, voltage2, capacity1, capacity2, capacity3))
-    SSR = (CodeData['capacity'][i] - v3)**2
+    SSR = (refvoltage - v3)**2
     return SSR
 
 def SSRmain(folder_name, dataset):
@@ -30,25 +31,70 @@ def SSRmain(folder_name, dataset):
     CodeData = pd.read_csv(path2+"/" + folder_name + "/" + "output.csv")
     cyclestart = CodeData[CodeData['cycle'] > 0]['cycle'].idxmin() + 1
     chargestart = CodeData[CodeData['cycle'] > 1]['cycle'].idxmin()
+    Voltagesort = CodeData.filter(like='phi_ed')
+    Phi_ed_loc = Voltagesort.columns[-1]
+    Desiredcolumn = Voltagesort[Phi_ed_loc][cyclestart:chargestart]
+    Desiredcolumn = Desiredcolumn.reset_index()
     for x, y in enumerate(CodeData['capacity'][cyclestart:chargestart]):
-        SumSR += locater(dataset, x, y)
+        refvoltage = Desiredcolumn[Phi_ed_loc][x]
+        SumSR += locater(dataset, y, refvoltage)
+    return SumSR
+
+
+def locater2(dataset, refcapacity1, refvoltage1):
+    new = CodeData['capacity'][cyclestart:chargestart]
+    lowerneighbour_ind = new[new < refcapacity1].idxmax()
+    higherneighbour_ind = lowerneighbour_ind + 1
+    capacity1 = new[lowerneighbour_ind]
+    capacity2 = new[higherneighbour_ind]
+    capacity3 = refcapacity
+    print(capacity1, capacity2, capacity3)
+    voltage1 = Desiredcolumn[Phi_ed_loc][lowerneighbour_ind]
+    voltage2 = Desiredcolumn[Phi_ed_loc][higherneighbour_ind]
+    v3 = (interpolate(voltage1, voltage2, capacity1, capacity2, capacity3))
+    SSR = (refvoltage - v3)**2
+    return SSR
+
+def SSRmain3(folder_name, dataset):
+    SumSR = 0
+    CodeData = pd.read_csv(path2+"/" + folder_name + "/" + "output.csv")
+    cyclestart = CodeData[CodeData['cycle'] > 0]['cycle'].idxmin() + 1
+    chargestart = CodeData[CodeData['cycle'] > 1]['cycle'].idxmin()
+    Voltagesort = CodeData.filter(like='phi_ed')
+    Phi_ed_loc = Voltagesort.columns[-1]
+    Desiredcolumn = Voltagesort[Phi_ed_loc][cyclestart:chargestart]
+    Desiredcolumn = Desiredcolumn.reset_index()
+    for x, y in enumerate(RefData[dataset]['Capacity']):
+        refvoltage1 = RefData[dataset]['Voltage'][x]
+        SumSR += locater2(dataset, y, refvoltage)
+    return SumSR
+
 
 RefData = pd.read_excel(path + "/"+ comparison, sheet_name= None)
 
 #%%
 ID_key = {"CPCN04": "50CP50CNT0.4", "CP04":"CP0.4", "CPCN05":"50CP50CNT0.5", "CP05": "CP0.5", "CPCN06":"50CP50CNT0.6", "CP06":"CP0.6"}
+
+#%%
+
+
+
+
+#%%
 SSRarray = []
-
-
+altSSRarray = []
 for folder_name in os.listdir(path2):
-    if "20220114" in folder_name:
+    if "1045" in folder_name:
         string = folder_name
         array = string.split("_")
-        dataset = ID_key[array[1]]
+        dataset = ID_key[array[0]]
         SSR_file = SSRmain(folder_name, dataset)
+        SSR_file2 = SSRmain3(folder_name, dataset)
         SSRarray.append(SSR_file)
+        altSSRarray.append(SSR_file2)
 
-print(SSRarray)
+# print(SSRarray)
+# print(altSSRarray)
 
 
 #result = [locater("50CP50CNT0.4", x, refcapcity) for x, refcapcity in enumerate(CodeData['Capacity'])]
@@ -63,3 +109,5 @@ print(SSRarray)
 # %%
 # Official Playlist
 # Small World - Bump of Chicken
+# Taxi Driver - Rkomi
+# 30 - UVERworld
