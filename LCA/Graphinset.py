@@ -123,7 +123,7 @@ upper = list(Results['perkm']['Upper'])
 lower = list(Results['perkm']["Lower"])
 Total = list(Results['perkm']["Total"])
 Total1 = list(Results['perkm']["Total1"])
-
+plt.style.use('default')
 colors2 = {'Production':'#B3DE69','Use':'#FFDD2B','Replacement':'#F28E2B'}
 
 fig2, ax3 = plt.subplots()
@@ -134,7 +134,7 @@ ax3.yaxis.label.set_color('black')
 ax3.errorbar(list(distance['Author']),Total, yerr = (lower,upper), color="black", ls='none')
 
 
-axins = inset_axes(ax3, width="75%", height="60%", loc="upper right")
+axins = inset_axes(ax3, width="75%", height="55%", loc="upper right")
 axins.tick_params(axis="y",direction="in", colors='black')
 axins.yaxis.label.set_color('black')
 axins.errorbar(list(distance['Author']),Total1, yerr = (lower,upper), color="black", ls='none')
@@ -153,6 +153,7 @@ mass = mass[mass.columns[0:4]]
 mass2 = Results['perkwh'][['Mass Basis']]
 upper1 = list(Results['perkwh']['Upper'])
 lower1 = list(Results['perkwh']["Lower"])
+
 colors3 = {'Materials':'#B3DE69','Transportation':'#FFDD2B','Production':'#F28E2B'}
 
 fig3, ax4 = plt.subplots()
