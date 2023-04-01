@@ -9,4 +9,4 @@ A tutorial to make the following graphs is included as a jupyter notebook tutori
 - Applying Life Cycle Analysis for Materials Selection in Li-O2 Batteries - (in Progress)
 
 The tutorial covers making basic bar graphs, and the following configurations in this paper, using matplotlib and pandas
-![Sample output image](example_graphs.png)
+![Sample output image](example_graph.png)
