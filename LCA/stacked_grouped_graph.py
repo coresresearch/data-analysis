@@ -10,7 +10,7 @@ RefData = pd.read_excel(path + "/"+ "Summary_LCA.xlsx", sheet_name= None, header
 
 # %%
 # This a function which plots a clustered bar chart
-key = "Lithium"
+# key = "Lithium"
 # cmap = plt.get_cmap('Greys')
 
 # key = "Current Collectors"
@@ -31,7 +31,7 @@ key = "Lithium"
 # ax1.set_ylim(30000, max)  # outliers only
 # ax2.set_ylim(0, 70)
 
-# key = "Catalysts"
+key = "Catalysts"
 # cmap = plt.get_cmap('Blues')
 
 # key ='Solvents'
@@ -82,7 +82,7 @@ handles, labels = ax2.get_legend_handles_labels()
 fig2.legend(flip(handles, 5), flip(labels, 5), loc=9, ncol=5)
 # fig2.legend(labels = Clustered.columns[1:], loc="upper center", ncol=5)
 ax2.xaxis.tick_bottom()
-ax1.yaxis.set_ticks(np.arange(1000, max, 10000))
+ax1.yaxis.set_ticks(np.arange(1000, max, 50000))
 ax1.set_ylim(1000, max)  # outliers only
 ax2.set_ylim(0, 70)
 d = .5  # proportion of vertical to horizontal extent of the slanted line
