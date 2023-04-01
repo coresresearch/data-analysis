@@ -8,5 +8,5 @@ A tutorial to make the following graphs is included as a jupyter notebook tutori
 - [Carbon footprint of Li-Oxygen batteries and the impact of material and structure selection](https://doi.org/10.1016/j.est.2023.106684)
 - Applying Life Cycle Analysis for Materials Selection in Li-O2 Batteries - (in Progress)
 
-The tutorial covers making basic bar graphs, and the following configurations in this paper, using matplotlib and pandas
+The tutorial covers making basic bar graphs, and the following configurations in this paper, using matplotlib and pandas. You can find the relevant part of the tutorial by searching by the type of graph you're looking for
 ![Sample output image](example_graph.png)
