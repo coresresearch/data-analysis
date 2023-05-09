@@ -16,11 +16,13 @@ def graph_concentrations(pathes, title):
     colors = list()
     for i in np.arange(n):
         colors.append(cmap(color_ind[i]))
-    Data.filter(like = key).plot.line(legend = False, title = title, color = colors) #
+    Data.filter(like = key).plot.line(legend = False, color = colors) #
     plt.style.use('default')
     plt.xlabel('time (s)')
-    plt.ylabel('CLO4- Concentration (M)')
+    plt.ylabel('Li2O2 Volume Fraction')
     plt.tick_params(direction= 'in')
+
+
 
 #%%
 for folder in os.listdir(path):
