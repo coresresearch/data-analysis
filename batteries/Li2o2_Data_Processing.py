@@ -43,8 +43,8 @@ fontname = 'Times New Roman'
 #%%
 
 "===================== PLOTTING FUNCTION ============================="
-def graph(file):
-    Data = pd.read_table(file, sep='deliminator', engine='python', header=None)
+def graph(filename):
+    Data = pd.read_table(filename, sep='deliminator', engine='python', header=None)
     Data.dropna(inplace = True)
     Data = Data[0].str.split("\t", expand = True)
 
@@ -58,7 +58,9 @@ def graph(file):
     Data[3] = Data[3].astype(float) # Current [A]
 
     Data['capacity'] = Data[1] * abs(Data[3])/carb_m*1000/3600 #convert to mAh/g
-    title = file.split("_cycle_") #change this so the number is isolated.
+
+    title = filename.split("_cycle")
+
     # Read out the cycle number:
     title2 = title[1].split(".")
     n_cycle = int(title2[0]) # cycle number
