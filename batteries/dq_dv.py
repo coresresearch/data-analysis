@@ -24,14 +24,14 @@ for data in files:
         charge = df[(df['Cycle']==i) & (df['Step']==4)]
         discharge = df[(df['Cycle']==i) & (df['Step']==7)]
         
-# We will sample the charge and discharge profiles, at regularly-spaced intervals. 
-# Begin by calculating the average voltage step size.
-
-        step = (max(charge['Voltage'])-min(charge['Voltage']))/len(charge['Voltage'])
+        # We will sample the charge and discharge profiles, at regularly-spaced #  intervals. Begin by calculating the average voltage step size.
+        step_charge = (max(charge['Voltage'])-min(charge['Voltage']))/len(charge['Voltage'])
         step_discharge = (max(discharge['Voltage'])-min(discharge['Voltage']))/len(discharge['Voltage'])
         
-        x = np.arange(min(charge['Voltage']),max(charge['Voltage']),step)
-        x_discharge = np.arange(min(discharge['Voltage']),max(discharge['Voltage']),step_discharge)
+        x_charge = np.arange(min(charge['Voltage']),max(charge['Voltage']),
+                            step_charge)
+        x_discharge = np.arange(min(discharge['Voltage']),
+                            max(discharge['Voltage']),step_discharge)
         
         xc = charge['Voltage']
         xd = np.flip(discharge['Voltage'])
@@ -39,29 +39,28 @@ for data in files:
         fc = charge['Capacity (mAHr)']
         fd = np.flip(discharge['Capacity (mAHr)'])
         
-        interpolation = np.interp(x, xc, fc)
+        interpolation_charge = np.interp(x_charge, xc, fc)
         interpolation_discharge=np.interp(x_discharge, xd, fd)
         
         #smooth data
-        
-        filtered = sp.signal.savgol_filter(interpolation, 9, 1)
-        filtered_discharge = sp.signal.savgol_filter(interpolation_discharge, 9, 1)
+        filtered_charge = sp.signal.savgol_filter(interpolation_charge, 9, 1)
+        filtered_discharge = sp.signal.savgol_filter(interpolation_discharge, 
+                                                     9, 1)
         
         #doing differentials for dq/dv
-        
-        dV = np.diff(x)
-        dq = np.diff(filtered)
-        dq_dV=dq/dV
-        V = x[:-1]
+        dV_charge = np.diff(x_charge)
+        dq_charge = np.diff(filtered_charge)
+        dq_dV_charge=dq_charge / dV_charge
+        V_charge = x_charge[:-1]
         dV_discharge = np.diff(x_discharge)
         dq_discharge = np.diff(filtered_discharge)
         dq_dV_discharge = dq_discharge/dV_discharge
-        V2 = x_discharge[:-1]
+        V_discharge = x_discharge[:-1]
         
         #Plot charge/discharge curve dq/dv
         plt.figure(1)
-        plt.plot(V,dq_dV,'r')
-        plt.plot(V2,dq_dV_discharge,'r', label=data)
+        plt.plot(V_charge, dq_dV_charge, 'r')
+        plt.plot(V_discharge, dq_dV_discharge, 'r', label=data)
         plt.legend(loc ="upper left")
          
     #Determine the capacity(area under the curve)
